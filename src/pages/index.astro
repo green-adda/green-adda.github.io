@@ -232,20 +232,49 @@ if (progressBar) {
     updateProgress();
 }
 
-// ── IntersectionObserver for scroll-triggered reveals ────────────────
-const revealObserver = new IntersectionObserver(
-    (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                revealObserver.unobserve(entry.target); // fire once
-            }
-        });
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+// ── Scroll-triggered reveals — iOS-safe ──────────────────────────────
+// Collect all elements that need revealing
+const revealEls = Array.from(
+    document.querySelectorAll<HTMLElement>('.reveal, .reveal-heading')
 );
 
-document.querySelectorAll('.reveal, .reveal-heading').forEach((el) => {
-    revealObserver.observe(el);
-});
+function showEl(el: HTMLElement) {
+    el.classList.add('is-visible');
+}
+
+// Hard fallback: if anything goes wrong (old iOS, observer never fires),
+// show all elements after 800 ms so content is never stuck invisible.
+const fallbackTimer = setTimeout(() => {
+    revealEls.forEach(showEl);
+}, 800);
+
+if ('IntersectionObserver' in window) {
+    // Use rAF so iOS has finished layout before we start observing
+    requestAnimationFrame(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        showEl(entry.target as HTMLElement);
+                        observer.unobserve(entry.target);
+                    }
+                });
+                // If every element is now visible, clear the fallback timer
+                if (revealEls.every(el => el.classList.contains('is-visible'))) {
+                    clearTimeout(fallbackTimer);
+                }
+            },
+            {
+                threshold: 0,        // fire on first pixel — most reliable on iOS
+                rootMargin: '0px',   // no margin shrinkage — safe for small viewports
+            }
+        );
+
+        revealEls.forEach(el => observer.observe(el));
+    });
+} else {
+    // No IntersectionObserver support — show everything immediately
+    clearTimeout(fallbackTimer);
+    revealEls.forEach(showEl);
+}
 </script>
