@@ -7,6 +7,13 @@ export default defineConfig({
   site: 'https://greenadda.com',
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      headers: {
+        // Strip server fingerprinting headers
+        'X-Powered-By': '',
+        'Server': '',
+      },
+    },
   },
   build: {
     inlineStylesheets: 'always',

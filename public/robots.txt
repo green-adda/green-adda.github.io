@@ -1,0 +1,10 @@
+# robots.txt for greenadda.com
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+
+# Disallow admin or private paths if they exist in the future
+# Disallow: /admin/
+
+Sitemap: https://greenadda.com/sitemap.xml
