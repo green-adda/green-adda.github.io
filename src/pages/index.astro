@@ -232,20 +232,41 @@ if (progressBar) {
     updateProgress();
 }
 
-// ── IntersectionObserver for scroll-triggered reveals ────────────────
-const revealObserver = new IntersectionObserver(
-    (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                revealObserver.unobserve(entry.target); // fire once
-            }
-        });
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-);
+// ── IntersectionObserver for scroll-triggered reveals ─────────────────
+// iOS Safari fix:
+//   • threshold: 0   — fire as soon as ANY pixel enters the viewport;
+//                       iOS can report ratio=0 even when partially visible
+//                       if a non-zero threshold is used with a dynamic address bar.
+//   • no negative rootMargin — shrinking the detection zone on small screens
+//                       can push elements completely outside the trigger area.
+//   • IO feature check — reveal all immediately if IO isn't supported.
+const revealAll = () => {
+    document.querySelectorAll('.reveal, .reveal-heading').forEach((el) => {
+        el.classList.add('is-visible');
+    });
+};
 
-document.querySelectorAll('.reveal, .reveal-heading').forEach((el) => {
-    revealObserver.observe(el);
-});
+if (!('IntersectionObserver' in window)) {
+    // Very old Safari fallback — just show everything.
+    revealAll();
+} else {
+    const revealObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        },
+        {
+            threshold: 0,         // any intersection triggers — iOS Safari safe
+            rootMargin: '0px',    // no shrinking — full viewport on all devices
+        }
+    );
+
+    document.querySelectorAll('.reveal, .reveal-heading').forEach((el) => {
+        revealObserver.observe(el);
+    });
+}
 </script>
