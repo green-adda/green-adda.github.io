@@ -3,9 +3,12 @@ const today = new Date();
 ---
 <footer class="border-t border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
   <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-    <p class="text-center text-sm leading-6 text-zinc-500 dark:text-zinc-400">
-      &copy; <span id="current-year">{today.getFullYear()}</span> <span class="font-bold text-lime-700 dark:text-lime-500">Green</span><span class="font-normal text-zinc-900 dark:text-zinc-100">adda</span> Private Limited. Rooting Tech in Sustainability.
-    </p>
+    <div class="flex flex-col items-center gap-1 sm:flex-row sm:justify-center sm:gap-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+      <p>
+        &copy; <span id="current-year">{today.getFullYear()}</span> <span class="font-bold text-lime-700 dark:text-lime-500">Green</span><span class="font-normal text-zinc-900 dark:text-zinc-100">adda</span> Private Limited
+      </p>
+      <p class="sm:before:content-['·'] sm:before:mr-2">Rooting Tech in Sustainability</p>
+    </div>
   </div>
 </footer>
 
