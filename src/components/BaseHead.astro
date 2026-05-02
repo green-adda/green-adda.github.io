@@ -38,7 +38,7 @@ const organizationSchema = {
 // Allow Astro's HMR WebSocket in dev; lock down in production
 const connectSrc = import.meta.env.DEV
 	? "connect-src 'self' ws://localhost:* http://localhost:*"
-	: "connect-src 'none'";
+	: "connect-src 'self'";
 
 const csp = [
 	"default-src 'self'",
